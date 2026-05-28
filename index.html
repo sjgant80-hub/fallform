@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a1a17">
+<title>FallForm · forms · without the response cap</title>
+<meta name="description" content="Typeform charges $25/mo and caps free at 10 responses. FallForm is one HTML file. Unlimited responses. Your data on your device. £0/mo forever.">
+<link rel="manifest" href='data:application/manifest+json,{"name":"FallForm","short_name":"FallForm","start_url":".","display":"standalone","background_color":"#1a1a17","theme_color":"#e8a012","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 fill=%22%231a1a17%22/><rect x=%2214%22 y=%2210%22 width=%2236%22 height=%2244%22 rx=%223%22 fill=%22none%22 stroke=%22%23e8a012%22 stroke-width=%223%22/><line x1=%2220%22 y1=%2220%22 x2=%2244%22 y2=%2220%22 stroke=%22%23e8a012%22 stroke-width=%223%22 stroke-linecap=%22round%22/><line x1=%2220%22 y1=%2230%22 x2=%2244%22 y2=%2230%22 stroke=%22%23e8a012%22 stroke-width=%223%22 stroke-linecap=%22round%22/><line x1=%2220%22 y1=%2240%22 x2=%2436%22 y2=%2240%22 stroke=%22%23e8a012%22 stroke-width=%223%22 stroke-linecap=%22round%22/></svg>","sizes":"any","type":"image/svg+xml"}]}'>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #1a1a17;
+  --bg-2: #23231f;
+  --bg-3: #2d2d28;
+  --line: #3a3a33;
+  --text: #f5f1e8;
+  --muted: #948f80;
+  --gold: #e8a012;
+  --gold-dim: #b87d0d;
+  --green: #44aa44;
+  --red: #ff4444;
+  --r: 12px;
+}
+html, body { background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; min-height: 100dvh; -webkit-font-smoothing: antialiased; }
+body { padding-bottom: env(safe-area-inset-bottom); }
+h1, h2, h3 { font-family: 'Syne', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+h1 { font-size: 22px; }
+h2 { font-size: 18px; }
+h3 { font-size: 14px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+
+header { padding: 14px 16px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 50; backdrop-filter: blur(8px); }
+.top { display: flex; align-items: center; justify-content: space-between; max-width: 1000px; margin: 0 auto; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark { width: 40px; height: 40px; background: var(--gold); border-radius: 8px; display: grid; place-items: center; color: #1a1a17; font-family: 'Syne'; font-weight: 800; font-size: 20px; }
+.brand-name { font-family: 'Syne'; font-weight: 800; font-size: 18px; }
+.brand-sub { color: var(--muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+.icon-btn { background: var(--bg-2); border: 1px solid var(--line); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; }
+
+main { padding: 20px 16px 100px; max-width: 1000px; margin: 0 auto; }
+.view { display: none; }
+.view.active { display: block; }
+
+.card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; margin-bottom: 16px; }
+.card-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+
+.field { margin-bottom: 12px; }
+.field label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+.field input, .field select, .field textarea { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 12px; border-radius: 8px; font-size: 15px; font-family: inherit; }
+.field input:focus, .field textarea:focus, .field select:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+.field textarea { min-height: 80px; resize: vertical; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+
+.btn { background: var(--gold); color: #1a1a17; border: none; padding: 14px 18px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; width: 100%; }
+.btn:hover { background: var(--gold-dim); }
+.btn:active { transform: scale(0.98); }
+.btn.secondary { background: var(--bg-3); color: var(--text); border: 1px solid var(--line); }
+.btn.red { background: var(--red); color: #fff; }
+.btn.small { padding: 8px 14px; font-size: 13px; width: auto; }
+
+/* form builder · field cards */
+.field-card { background: var(--bg-3); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.field-card.dragging { opacity: 0.5; }
+.field-card .fc-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.field-card .fc-type { color: var(--gold); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+.field-card .fc-actions { display: flex; gap: 4px; }
+.field-card .fc-actions button { background: none; border: 1px solid var(--line); color: var(--muted); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-family: inherit; }
+.field-card .fc-actions button:hover { color: var(--text); }
+.field-card .fc-actions button.del:hover { color: var(--red); border-color: var(--red); }
+
+.field-type-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+@media (max-width: 600px) { .field-type-row { grid-template-columns: repeat(2, 1fr); } }
+.field-type-btn { background: var(--bg-3); border: 1px solid var(--line); color: var(--text); padding: 12px 8px; border-radius: 8px; cursor: pointer; font-family: inherit; text-align: center; font-size: 12px; }
+.field-type-btn:hover { border-color: var(--gold); color: var(--gold); }
+.field-type-btn .ic { font-size: 18px; display: block; margin-bottom: 4px; }
+
+/* form render (preview / public) */
+.rendered-form { padding: 20px; background: var(--bg-2); border-radius: 12px; max-width: 600px; margin: 0 auto; }
+.rendered-form .form-title { font-family: 'Syne'; font-weight: 700; font-size: 22px; margin-bottom: 6px; }
+.rendered-form .form-desc { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+.rendered-form .form-q { margin-bottom: 16px; }
+.rendered-form .form-q label { display: block; font-weight: 600; margin-bottom: 6px; }
+.rendered-form .form-q .req { color: var(--red); }
+.rendered-form .form-q .help { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+.rendered-form .form-q input[type=text],
+.rendered-form .form-q input[type=email],
+.rendered-form .form-q input[type=number],
+.rendered-form .form-q input[type=tel],
+.rendered-form .form-q input[type=date],
+.rendered-form .form-q select,
+.rendered-form .form-q textarea { width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 12px; border-radius: 8px; font-size: 15px; font-family: inherit; }
+.rendered-form .form-q .radio-row, .rendered-form .form-q .check-row { display: flex; flex-direction: column; gap: 6px; }
+.rendered-form .form-q .radio-row label, .rendered-form .form-q .check-row label { display: flex; align-items: center; gap: 8px; font-weight: 400; }
+
+/* responses table */
+.resp-item { background: var(--bg-3); border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin-bottom: 10px; cursor: pointer; }
+.resp-item:hover { border-color: var(--gold); }
+.resp-item .hd { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+.resp-item .when { color: var(--muted); }
+.resp-item .preview { color: var(--text); font-size: 13px; }
+
+/* nav */
+nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-2); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 60; }
+.tab { background: none; border: none; color: var(--muted); padding: 10px 4px; font-size: 11px; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.tab.active { color: var(--gold); }
+.tab .ic { font-size: 18px; }
+
+/* tabs list */
+.form-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; overflow-x: auto; padding-bottom: 4px; }
+.form-tab { background: var(--bg-3); border: 1px solid var(--line); color: var(--muted); padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.form-tab.active { background: var(--gold); color: #1a1a17; border-color: var(--gold); font-weight: 700; }
+
+/* modal */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; align-items: flex-end; }
+.modal-bg.open { display: flex; }
+.modal { background: var(--bg-2); width: 100%; max-width: 720px; margin: 0 auto; border-radius: 16px 16px 0 0; padding: 22px; max-height: 90vh; overflow-y: auto; padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
+.modal-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.modal-close { background: none; border: none; color: var(--muted); font-size: 28px; cursor: pointer; padding: 0 8px; line-height: 1; }
+
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #1a1a17; padding: 10px 20px; border-radius: 24px; font-weight: 700; z-index: 200; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
+footer { text-align: center; padding: 24px 16px; color: var(--muted); font-size: 11px; }
+footer a { color: var(--gold); text-decoration: none; }
+
+.empty { text-align: center; padding: 36px 20px; color: var(--muted); }
+.empty .icon { font-size: 40px; opacity: 0.4; margin-bottom: 10px; }
+
+.row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.row:last-child { border-bottom: none; }
+.row .lbl { color: var(--muted); }
+
+.muted { color: var(--muted); }
+.hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+.tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; background: var(--bg-3); color: var(--muted); margin-right: 4px; }
+.tag.gold { color: var(--gold); }
+.tag.green { color: var(--green); }
+.share-link { background: rgba(232,160,18,0.08); border: 1px dashed var(--gold); padding: 12px; border-radius: 8px; font-family: ui-monospace, "SF Mono", monospace; font-size: 12px; word-break: break-all; cursor: pointer; margin: 10px 0; }
+.share-link:hover { background: rgba(232,160,18,0.15); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top">
+    <div class="brand">
+      <div class="brand-mark">▤</div>
+      <div>
+        <div class="brand-name">FallForm</div>
+        <div class="brand-sub">forms · no response cap</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="icon-btn" id="btnTier">offline</button>
+      <button class="icon-btn" id="btnSettings">⚙</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- FORM TABS -->
+<div class="form-tabs" id="formTabs"></div>
+
+<!-- BUILD -->
+<section class="view active" id="view-build">
+  <div class="card">
+    <h2 id="buildTitle">Build · loading...</h2>
+    <div class="field"><label>Form title</label><input id="fmTitle" oninput="updateFormMeta()"></div>
+    <div class="field"><label>Description (optional)</label><textarea id="fmDesc" oninput="updateFormMeta()"></textarea></div>
+
+    <h3 style="margin:18px 0 8px">Add field</h3>
+    <div class="field-type-row">
+      <button class="field-type-btn" onclick="addField('text')"><span class="ic">A</span>Text</button>
+      <button class="field-type-btn" onclick="addField('email')"><span class="ic">@</span>Email</button>
+      <button class="field-type-btn" onclick="addField('textarea')"><span class="ic">¶</span>Paragraph</button>
+      <button class="field-type-btn" onclick="addField('number')"><span class="ic">#</span>Number</button>
+      <button class="field-type-btn" onclick="addField('tel')"><span class="ic">☎</span>Phone</button>
+      <button class="field-type-btn" onclick="addField('date')"><span class="ic">📅</span>Date</button>
+      <button class="field-type-btn" onclick="addField('radio')"><span class="ic">◉</span>Single choice</button>
+      <button class="field-type-btn" onclick="addField('checkbox')"><span class="ic">☑</span>Multi choice</button>
+    </div>
+
+    <h3 style="margin:18px 0 8px">Fields</h3>
+    <div id="fieldsList"></div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn small" onclick="switchView('preview')">▶ Preview</button>
+      <button class="btn small secondary" onclick="duplicateForm()">⎘ Duplicate form</button>
+      <button class="btn small secondary" onclick="newForm()">+ New form</button>
+      <button class="btn small secondary" onclick="deleteForm()">✕ Delete</button>
+    </div>
+  </div>
+</section>
+
+<!-- PREVIEW (also = public render) -->
+<section class="view" id="view-preview">
+  <div class="card">
+    <h2>Preview · this is what they see</h2>
+    <div class="rendered-form" id="renderedForm"></div>
+  </div>
+</section>
+
+<!-- RESPONSES -->
+<section class="view" id="view-responses">
+  <div class="card">
+    <div class="card-hd">
+      <h2>Responses</h2>
+      <button class="btn small secondary" onclick="exportResponsesCSV()">📥 CSV</button>
+    </div>
+    <p class="muted" style="font-size:13px;margin-bottom:10px">All responses live on your device. No caps. No tiers. No subscription.</p>
+    <div id="responsesList"></div>
+  </div>
+</section>
+
+<!-- SHARE -->
+<section class="view" id="view-share">
+  <div class="card">
+    <h2>Share this form</h2>
+    <p class="muted" style="font-size:13px;margin-bottom:8px">Public form URL (the page works both as builder AND public form — `?f=<id>&mode=fill` opens the fill view).</p>
+    <div class="share-link" id="shareLink" onclick="copyShareLink()">Loading...</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn small" onclick="copyShareLink()">📋 Copy link</button>
+      <button class="btn small secondary" onclick="copyEmbed()">▦ Copy iframe</button>
+      <button class="btn small secondary" onclick="exportAll()">💾 Backup all</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>What you save vs Typeform</h2>
+    <div class="row"><span class="lbl">Typeform Plus · 1k responses</span><span style="color:var(--red)">$50/mo · $600/yr</span></div>
+    <div class="row"><span class="lbl">Typeform Business · 10k responses</span><span style="color:var(--red)">$83/mo · $996/yr</span></div>
+    <div class="row"><span class="lbl">+ Partial completions count toward cap</span><span style="color:var(--red)">extortion</span></div>
+    <div class="row"><span class="lbl">FallForm · unlimited responses</span><span style="color:var(--green)">£0/forever</span></div>
+    <div class="row"><span class="lbl"><b>You save</b></span><span style="color:var(--green);font-family:'Syne';font-weight:800;font-size:18px">$996+/yr</span></div>
+  </div>
+</section>
+
+<footer>
+  FallForm · ◊·κ=1 · single HTML · on-device · prime 269 · <a href="https://github.com/sjgant80-hub/fallform" target="_blank">source</a>
+</footer>
+
+</main>
+
+<nav>
+  <button class="tab active" data-view="build"><span class="ic">▤</span>Build</button>
+  <button class="tab" data-view="preview"><span class="ic">▶</span>Preview</button>
+  <button class="tab" data-view="responses"><span class="ic">✉</span>Responses</button>
+  <button class="tab" data-view="share"><span class="ic">🔗</span>Share</button>
+</nav>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-hd">
+      <h2 id="modalTitle">·</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">·</div>
+
+<script>
+'use strict';
+
+const VERSION = '1.0.0';
+const PRIME = 269;
+const STORE = 'fallform-state';
+
+let state = {
+  forms: [],          // { id, title, desc, fields: [{ id, type, label, required, help, options? }] }
+  responses: [],      // { id, formId, ts, data: {fieldId: value} }
+  activeFormId: null,
+  settings: {
+    yourName: 'Simon',
+    webhookUrl: '',
+    notifyEmail: '',
+    anthropicKey: '', openaiKey: '', geminiKey: '', openrouterKey: '',
+  },
+  meta: { created: Date.now(), version: VERSION },
+};
+
+async function saveState() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
+async function loadState() { try { const raw = localStorage.getItem(STORE); if (raw) state = Object.assign(state, JSON.parse(raw)); } catch (e) {} }
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._to);
+  t._to = setTimeout(() => t.classList.remove('show'), 1800);
+}
+function escHTML(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+// ═══ CASCADE ═══
+const Cascade = {
+  async detectTier() {
+    if (await Cascade._probeLocal()) return 'T2';
+    const s = state.settings;
+    if (s.anthropicKey || s.openaiKey || s.geminiKey || s.openrouterKey) return 'T3';
+    return 'T0';
+  },
+  async _probeLocal() {
+    if (Cascade._localProbed !== undefined) return Cascade._localProbed;
+    try {
+      const r = await Promise.race([
+        fetch('http://127.0.0.1:11434/api/tags').then(r => r.ok),
+        new Promise(res => setTimeout(() => res(false), 400)),
+      ]);
+      Cascade._localProbed = !!r;
+    } catch (e) { Cascade._localProbed = false; }
+    return Cascade._localProbed;
+  },
+};
+
+const KCC = {
+  log(ring, action, w = 1) {
+    state.kcc = (state.kcc || []).concat([{ ts: Date.now(), ring, action, w }]).slice(-500);
+    saveState();
+    try { new BroadcastChannel('fall-signal').postMessage({ source: 'fallform', type: 'kcc', ring, action, w, ts: Date.now() }); } catch (e) {}
+  },
+};
+
+// ═══ VIEW ROUTER ═══
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
+  if (name === 'build') renderBuild();
+  if (name === 'preview') renderPreview(false);
+  if (name === 'responses') renderResponses();
+  if (name === 'share') renderShare();
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchView(t.dataset.view)));
+
+// ═══════════════════════════════════════════
+// FORM TABS · multiple forms
+// ═══════════════════════════════════════════
+function renderTabs() {
+  const root = document.getElementById('formTabs');
+  if (!state.forms.length) {
+    root.innerHTML = `<button class="form-tab" onclick="newForm()">+ Create your first form</button>`;
+    return;
+  }
+  root.innerHTML = state.forms.map(f => `
+    <div class="form-tab ${f.id === state.activeFormId ? 'active' : ''}" onclick="selectForm('${f.id}')">${escHTML(f.title || 'Untitled')}</div>
+  `).join('') + `<button class="form-tab" onclick="newForm()">+ New</button>`;
+}
+
+function activeForm() { return state.forms.find(f => f.id === state.activeFormId); }
+
+async function newForm() {
+  const f = { id: uid(), title: 'New form', desc: '', fields: [] };
+  state.forms.push(f);
+  state.activeFormId = f.id;
+  await saveState();
+  KCC.log('R0', 'form_created', 1);
+  renderTabs();
+  switchView('build');
+}
+
+async function selectForm(id) {
+  state.activeFormId = id;
+  await saveState();
+  renderTabs();
+  switchView('build');
+}
+
+async function duplicateForm() {
+  const f = activeForm();
+  if (!f) return;
+  const copy = JSON.parse(JSON.stringify(f));
+  copy.id = uid();
+  copy.title = f.title + ' (copy)';
+  copy.fields = copy.fields.map(fld => ({ ...fld, id: uid() }));
+  state.forms.push(copy);
+  state.activeFormId = copy.id;
+  await saveState();
+  renderTabs(); renderBuild();
+  toast('Duplicated');
+}
+
+async function deleteForm() {
+  const f = activeForm();
+  if (!f) return;
+  if (!confirm('Delete this form? Responses stay (in case you need them).')) return;
+  state.forms = state.forms.filter(x => x.id !== state.activeFormId);
+  state.activeFormId = state.forms[0]?.id || null;
+  await saveState();
+  renderTabs(); renderBuild();
+  toast('Deleted');
+}
+
+// ═══════════════════════════════════════════
+// AGENT α · FORM BUILDER
+// ═══════════════════════════════════════════
+function renderBuild() {
+  const f = activeForm();
+  if (!f) { document.getElementById('buildTitle').textContent = 'No form selected'; document.getElementById('fieldsList').innerHTML = '<div class="empty"><div class="icon">▤</div><h3 style="color:var(--text)">Create your first form</h3><p>Tap "+ New" above.</p></div>'; return; }
+  document.getElementById('buildTitle').textContent = 'Build · ' + (f.title || 'Untitled');
+  document.getElementById('fmTitle').value = f.title || '';
+  document.getElementById('fmDesc').value = f.desc || '';
+  const root = document.getElementById('fieldsList');
+  if (!f.fields.length) { root.innerHTML = '<div class="empty"><div class="icon">+</div><p>Tap a field type above to add one.</p></div>'; return; }
+  root.innerHTML = f.fields.map((fld, i) => renderFieldCard(fld, i)).join('');
+}
+
+function renderFieldCard(fld, idx) {
+  const opts = ['radio', 'checkbox'].includes(fld.type) ? `<div class="field"><label>Options (one per line)</label><textarea data-fid="${fld.id}" onblur="updateFieldOpts(this)">${escHTML((fld.options || []).join('\n'))}</textarea></div>` : '';
+  return `
+    <div class="field-card" data-fid="${fld.id}">
+      <div class="fc-hd">
+        <span class="fc-type">${escHTML(fld.type)}</span>
+        <div class="fc-actions">
+          ${idx > 0 ? `<button onclick="moveField('${fld.id}', -1)">↑</button>` : ''}
+          ${idx < activeForm().fields.length - 1 ? `<button onclick="moveField('${fld.id}', 1)">↓</button>` : ''}
+          <button class="del" onclick="deleteField('${fld.id}')">✕</button>
+        </div>
+      </div>
+      <div class="field"><label>Question / label</label><input data-fid="${fld.id}" data-prop="label" value="${escHTML(fld.label)}" oninput="updateField(this)"></div>
+      <div class="field"><label>Help text (optional)</label><input data-fid="${fld.id}" data-prop="help" value="${escHTML(fld.help || '')}" oninput="updateField(this)"></div>
+      <div class="field"><label><input type="checkbox" data-fid="${fld.id}" data-prop="required" ${fld.required ? 'checked' : ''} onchange="updateField(this)"> Required</label></div>
+      ${opts}
+    </div>`;
+}
+
+async function addField(type) {
+  const f = activeForm();
+  if (!f) { await newForm(); return addField(type); }
+  const fld = { id: uid(), type, label: type === 'email' ? 'Your email' : type === 'tel' ? 'Phone' : 'Question', required: false, help: '' };
+  if (type === 'radio') fld.options = ['Option 1', 'Option 2', 'Option 3'];
+  if (type === 'checkbox') fld.options = ['Option 1', 'Option 2'];
+  f.fields.push(fld);
+  await saveState();
+  renderBuild();
+}
+
+async function updateField(el) {
+  const fld = activeForm().fields.find(f => f.id === el.dataset.fid);
+  if (!fld) return;
+  if (el.type === 'checkbox') fld[el.dataset.prop] = el.checked;
+  else fld[el.dataset.prop] = el.value;
+  await saveState();
+}
+
+async function updateFieldOpts(el) {
+  const fld = activeForm().fields.find(f => f.id === el.dataset.fid);
+  if (!fld) return;
+  fld.options = el.value.split('\n').map(s => s.trim()).filter(Boolean);
+  await saveState();
+}
+
+async function moveField(id, dir) {
+  const f = activeForm();
+  const i = f.fields.findIndex(x => x.id === id);
+  if (i < 0) return;
+  const j = i + dir;
+  if (j < 0 || j >= f.fields.length) return;
+  [f.fields[i], f.fields[j]] = [f.fields[j], f.fields[i]];
+  await saveState();
+  renderBuild();
+}
+
+async function deleteField(id) {
+  if (!confirm('Remove this field?')) return;
+  const f = activeForm();
+  f.fields = f.fields.filter(x => x.id !== id);
+  await saveState();
+  renderBuild();
+}
+
+async function updateFormMeta() {
+  const f = activeForm();
+  if (!f) return;
+  f.title = document.getElementById('fmTitle').value;
+  f.desc = document.getElementById('fmDesc').value;
+  await saveState();
+  renderTabs();
+}
+
+// ═══════════════════════════════════════════
+// AGENT β · FORM RENDERER (preview + public fill)
+// ═══════════════════════════════════════════
+function renderPreview(publicMode) {
+  const f = activeForm();
+  if (!f) { document.getElementById('renderedForm').innerHTML = '<div class="empty">No form selected</div>'; return; }
+  const root = document.getElementById('renderedForm');
+  root.innerHTML = `
+    <div class="form-title">${escHTML(f.title)}</div>
+    ${f.desc ? `<div class="form-desc">${escHTML(f.desc).replace(/\n/g, '<br>')}</div>` : ''}
+    <form id="publicForm" onsubmit="submitForm(event)">
+      ${f.fields.map(fld => renderFieldQ(fld)).join('')}
+      <button type="submit" class="btn">Submit</button>
+    </form>
+  `;
+}
+
+function renderFieldQ(fld) {
+  const req = fld.required ? '<span class="req">*</span>' : '';
+  const help = fld.help ? `<div class="help">${escHTML(fld.help)}</div>` : '';
+  let input = '';
+  if (fld.type === 'text') input = `<input name="${fld.id}" type="text" ${fld.required ? 'required' : ''}>`;
+  else if (fld.type === 'email') input = `<input name="${fld.id}" type="email" ${fld.required ? 'required' : ''}>`;
+  else if (fld.type === 'tel') input = `<input name="${fld.id}" type="tel">`;
+  else if (fld.type === 'number') input = `<input name="${fld.id}" type="number">`;
+  else if (fld.type === 'date') input = `<input name="${fld.id}" type="date">`;
+  else if (fld.type === 'textarea') input = `<textarea name="${fld.id}" ${fld.required ? 'required' : ''}></textarea>`;
+  else if (fld.type === 'radio') input = `<div class="radio-row">${(fld.options || []).map(o => `<label><input type="radio" name="${fld.id}" value="${escHTML(o)}" ${fld.required ? 'required' : ''}> ${escHTML(o)}</label>`).join('')}</div>`;
+  else if (fld.type === 'checkbox') input = `<div class="check-row">${(fld.options || []).map(o => `<label><input type="checkbox" name="${fld.id}" value="${escHTML(o)}"> ${escHTML(o)}</label>`).join('')}</div>`;
+  return `<div class="form-q"><label>${escHTML(fld.label)} ${req}</label>${help}${input}</div>`;
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  const f = activeForm();
+  if (!f) return;
+  const data = {};
+  for (const fld of f.fields) {
+    if (fld.type === 'checkbox') {
+      const checked = Array.from(document.querySelectorAll(`#publicForm input[name="${fld.id}"]:checked`)).map(c => c.value);
+      data[fld.id] = checked;
+    } else if (fld.type === 'radio') {
+      const sel = document.querySelector(`#publicForm input[name="${fld.id}"]:checked`);
+      data[fld.id] = sel ? sel.value : '';
+    } else {
+      data[fld.id] = document.querySelector(`#publicForm [name="${fld.id}"]`)?.value || '';
+    }
+  }
+  const resp = { id: uid(), formId: f.id, ts: Date.now(), data };
+  state.responses.push(resp);
+  await saveState();
+  KCC.log('R1', 'response_received', 2);
+  // optional webhook
+  if (state.settings.webhookUrl) {
+    try {
+      fetch(state.settings.webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ form: f.title, response: data, ts: resp.ts }) });
+    } catch (e) {}
+  }
+  // optional email notify (opens mailto:)
+  if (state.settings.notifyEmail) {
+    const summary = f.fields.map(fld => `${fld.label}: ${Array.isArray(data[fld.id]) ? data[fld.id].join(', ') : data[fld.id]}`).join('\n');
+    const mailto = `mailto:${state.settings.notifyEmail}?subject=${encodeURIComponent('Form response · ' + f.title)}&body=${encodeURIComponent(summary)}`;
+    setTimeout(() => { window.location.href = mailto; }, 500);
+  }
+  try { new BroadcastChannel('fall-signal').postMessage({ source: 'fallform', type: 'response', formId: f.id, ts: Date.now() }); } catch (e) {}
+  toast('◊ Thanks · response submitted');
+  document.getElementById('publicForm').reset();
+}
+
+// ═══════════════════════════════════════════
+// RESPONSES VIEW
+// ═══════════════════════════════════════════
+function renderResponses() {
+  const f = activeForm();
+  if (!f) { document.getElementById('responsesList').innerHTML = '<div class="empty">No form selected</div>'; return; }
+  const root = document.getElementById('responsesList');
+  const list = state.responses.filter(r => r.formId === f.id).sort((a, b) => b.ts - a.ts);
+  if (!list.length) { root.innerHTML = '<div class="empty"><div class="icon">✉</div><h3 style="color:var(--text)">No responses yet</h3><p>Share your form link. Responses land here.</p></div>'; return; }
+  root.innerHTML = `<div class="row"><span class="lbl">Total responses</span><span style="color:var(--gold);font-weight:700">${list.length}</span></div>` + list.map(r => {
+    const firstField = f.fields[0];
+    const preview = firstField ? `${firstField.label}: ${Array.isArray(r.data[firstField.id]) ? r.data[firstField.id].join(', ') : r.data[firstField.id]}` : '—';
+    return `<div class="resp-item" onclick="viewResponse('${r.id}')">
+      <div class="hd"><span class="when">${new Date(r.ts).toLocaleString('en-GB')}</span><span class="muted">tap to view</span></div>
+      <div class="preview">${escHTML(preview.slice(0, 100))}</div>
+    </div>`;
+  }).join('');
+}
+
+function viewResponse(id) {
+  const r = state.responses.find(x => x.id === id);
+  const f = state.forms.find(x => x.id === r.formId);
+  if (!r || !f) return;
+  const body = f.fields.map(fld => {
+    const v = r.data[fld.id];
+    return `<div class="row"><span class="lbl">${escHTML(fld.label)}</span><span>${escHTML(Array.isArray(v) ? v.join(', ') : (v || '—'))}</span></div>`;
+  }).join('');
+  showModal('Response · ' + new Date(r.ts).toLocaleString('en-GB'), body + `<div style="margin-top:14px"><button class="btn red" onclick="deleteResponse('${id}')">Delete response</button></div>`);
+}
+
+async function deleteResponse(id) {
+  if (!confirm('Delete this response permanently?')) return;
+  state.responses = state.responses.filter(r => r.id !== id);
+  await saveState();
+  closeModal();
+  renderResponses();
+  toast('Deleted');
+}
+
+function exportResponsesCSV() {
+  const f = activeForm();
+  if (!f) return;
+  const list = state.responses.filter(r => r.formId === f.id);
+  if (!list.length) { toast('No responses yet'); return; }
+  const headers = ['timestamp', ...f.fields.map(fld => fld.label)];
+  const rows = list.map(r => [new Date(r.ts).toISOString(), ...f.fields.map(fld => {
+    const v = r.data[fld.id];
+    return Array.isArray(v) ? v.join('; ') : (v || '');
+  })]);
+  const csv = [headers, ...rows].map(row => row.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${f.title.replace(/[^a-z0-9]+/gi, '-')}-responses.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('CSV downloaded');
+}
+
+// ═══════════════════════════════════════════
+// SHARE
+// ═══════════════════════════════════════════
+function renderShare() {
+  const f = activeForm();
+  if (!f) return;
+  const url = location.href.split('?')[0] + '?f=' + f.id + '&mode=fill';
+  document.getElementById('shareLink').textContent = url;
+}
+
+function copyShareLink() {
+  const f = activeForm();
+  if (!f) return;
+  const url = location.href.split('?')[0] + '?f=' + f.id + '&mode=fill';
+  navigator.clipboard.writeText(url).then(() => toast('Link copied'));
+}
+
+function copyEmbed() {
+  const f = activeForm();
+  if (!f) return;
+  const url = location.href.split('?')[0] + '?f=' + f.id + '&mode=fill';
+  const embed = `<iframe src="${url}" width="100%" height="600" style="border:0" loading="lazy"></iframe>`;
+  navigator.clipboard.writeText(embed).then(() => toast('iframe copied'));
+}
+
+function exportAll() {
+  const data = JSON.stringify({ exported: new Date().toISOString(), version: VERSION, state }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `fallform-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Backup downloaded');
+}
+
+// ═══════════════════════════════════════════
+// PUBLIC FILL MODE
+// ═══════════════════════════════════════════
+function checkPublicMode() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('mode') === 'fill') {
+    const fid = params.get('f');
+    if (fid) {
+      state.activeFormId = fid;
+      // Hide non-fill UI
+      document.querySelector('header').style.display = 'none';
+      document.querySelector('nav').style.display = 'none';
+      document.querySelector('footer').style.display = 'none';
+      document.querySelector('#formTabs').style.display = 'none';
+      document.querySelector('#view-build').style.display = 'none';
+      document.querySelector('#view-responses').style.display = 'none';
+      document.querySelector('#view-share').style.display = 'none';
+      document.querySelector('#view-preview').classList.add('active');
+      document.querySelector('#view-preview h2').style.display = 'none';
+      renderPreview(true);
+      document.body.style.padding = '20px 0';
+      return true;
+    }
+  }
+  return false;
+}
+
+// ═══════════════════════════════════════════
+// MODAL / SETTINGS
+// ═══════════════════════════════════════════
+function showModal(title, body) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+document.getElementById('btnSettings').addEventListener('click', () => {
+  showModal('Settings', `
+    <div class="field"><label>Your name</label><input id="stName" value="${escHTML(state.settings.yourName)}"></div>
+    <div class="field"><label>Email me on every response (optional)</label><input id="stNotifyEmail" type="email" value="${escHTML(state.settings.notifyEmail)}"></div>
+    <div class="field"><label>Webhook URL (optional · POST every response)</label><input id="stWebhook" value="${escHTML(state.settings.webhookUrl)}" placeholder="https://your-webhook"></div>
+    <p class="hint">Webhook = your own endpoint receives every submission. Zapier-equivalent without Zapier.</p>
+
+    <h3 style="margin:18px 0 8px">AI keys (for smarter parsing later · optional)</h3>
+    <div class="field"><label>Anthropic</label><input id="stAnthropic" type="password" value="${escHTML(state.settings.anthropicKey)}"></div>
+    <div class="field"><label>OpenAI</label><input id="stOpenAI" type="password" value="${escHTML(state.settings.openaiKey)}"></div>
+    <div class="field"><label>Gemini · free</label><input id="stGemini" type="password" value="${escHTML(state.settings.geminiKey)}"></div>
+    <div class="field"><label>OpenRouter</label><input id="stOpenRouter" type="password" value="${escHTML(state.settings.openrouterKey)}"></div>
+
+    <div style="margin-top:20px;text-align:center;color:var(--muted);font-size:11px">
+      FallForm · v${VERSION} · ◊·κ=1 · prime ${PRIME}<br>
+      forms · no response cap · ever
+    </div>
+    <div style="margin-top:14px"><button class="btn" onclick="saveSettings()">Save</button></div>
+  `);
+});
+
+async function saveSettings() {
+  state.settings.yourName = document.getElementById('stName').value || 'Simon';
+  state.settings.notifyEmail = document.getElementById('stNotifyEmail').value;
+  state.settings.webhookUrl = document.getElementById('stWebhook').value;
+  state.settings.anthropicKey = document.getElementById('stAnthropic').value;
+  state.settings.openaiKey = document.getElementById('stOpenAI').value;
+  state.settings.geminiKey = document.getElementById('stGemini').value;
+  state.settings.openrouterKey = document.getElementById('stOpenRouter').value;
+  Cascade._localProbed = undefined;
+  await saveState();
+  await updateTierBadge();
+  closeModal();
+  toast('Saved');
+}
+
+async function updateTierBadge() {
+  const tier = await Cascade.detectTier();
+  document.getElementById('btnTier').textContent = tier === 'T0' ? 'offline' : tier;
+}
+
+// ═══ KONOMI ═══
+window.KONOMI = { active: true, tier: 'sovereign', check: () => ({ ok: true, tier: 'sovereign' }) };
+
+// ═══ FALLMESH ═══
+try {
+  const sig = new BroadcastChannel('fall-signal');
+  sig.postMessage({ source: 'fallform', type: 'hello', prime: PRIME, version: VERSION, ts: Date.now() });
+  sig.addEventListener('message', e => {
+    const m = e.data;
+    if (m && m.type === 'ping') sig.postMessage({ source: 'fallform', type: 'pong', prime: PRIME });
+  });
+} catch (e) {}
+
+// ═══ postMessage API ═══
+window.addEventListener('message', async (e) => {
+  const m = e.data;
+  if (!m || m.target !== 'fallform' || !m.action) return;
+  let resp = null;
+  if (m.action === 'ping') resp = { ok: true, prime: PRIME, version: VERSION };
+  else if (m.action === 'forms') resp = state.forms.map(f => ({ id: f.id, title: f.title, fieldCount: f.fields.length }));
+  else if (m.action === 'responses' && m.formId) resp = state.responses.filter(r => r.formId === m.formId);
+  e.source?.postMessage({ target: m.source || '*', responseTo: m.action, data: resp }, '*');
+});
+
+// ═══ BOOT ═══
+(async function init() {
+  await loadState();
+  await updateTierBadge();
+  if (checkPublicMode()) return;
+  if (!state.forms.length) await newForm();
+  else if (!state.activeFormId) state.activeFormId = state.forms[0].id;
+  renderTabs();
+  renderBuild();
+})();
+</script>
+</body>
+</html>
