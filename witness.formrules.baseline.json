@@ -1,0 +1,44 @@
+[
+  {
+    "line": 53,
+    "mutation": "&& → ||",
+    "snippet": "return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() ===",
+    "reason": "Equivalent. This is the round-trip check that rejects a date which does not exist, by asking whether the constructed date still reads back as the one that was typed. Weakening any one of the three comparisons cannot change an answer, because a date that rolls forward always changes at least two of the three parts together: 31 April becomes 1 May, which differs in both month and day; month 13 becomes January of the next year, which differs in both year and month. There is no YYYY-MM-DD string for which exactly one part differs, so no single comparison can be relaxed without another still catching it. That 31 April, 30 February and 29 February in a common year are all refused is asserted in section 3."
+  },
+  {
+    "line": 27,
+    "mutation": "=== → !==",
+    "snippet": "const f = (field && typeof field === 'object') ? field : {};",
+    "reason": "Equivalent. This normalises a field definition inside isAnswered. Inverting the type test changes which values are replaced with the empty object and which are kept, but the only property read off the result is f.type, and neither a plain object without one nor a string, number or function carrying none produces a usable type — so the checkbox branch is never taken and the generic emptiness rules apply in both versions. No field definition produces a different answer. That garbage in place of a field does not throw, and that an empty list is unanswered whatever the type, are asserted in sections 8 and 9."
+  },
+  {
+    "line": 41,
+    "mutation": "&& → ||",
+    "snippet": "const f = (field && typeof field === 'object') ? field : {};",
+    "reason": "Equivalent, in isWellFormed. A truthy non-object kept by the mutant instead of being replaced with the empty object carries no type property, so none of the type-specific branches is entered and the function falls through to its permissive default in both versions. There is no input for which the shape verdict differs. Section 8 pins that every one of these values is handled without throwing."
+  },
+  {
+    "line": 69,
+    "mutation": "&& → ||",
+    "snippet": "const f = (field && typeof field === 'object') ? field : {};",
+    "reason": "Equivalent, in labelOf. A truthy non-object kept by the mutant carries no label property, so the label falls back to the question's position — exactly what happens when it is replaced with the empty object. That a question with no label is still identified by its position is asserted in section 5."
+  },
+  {
+    "line": 83,
+    "mutation": "=== → !==",
+    "snippet": "const o = (opts && typeof opts === 'object') ? opts : {};",
+    "reason": "Equivalent. This normalises the options bag in validate, and nothing is currently read off it — it exists so a caller can pass settings without the signature changing. Whichever value survives normalisation, no property of it reaches any decision, so the validation result is identical for every input."
+  },
+  {
+    "line": 83,
+    "mutation": "&& → ||",
+    "snippet": "const o = (opts && typeof opts === 'object') ? opts : {};",
+    "reason": "Equivalent, for the same reason as the type test on the same line: the normalised options bag is not read from, so no value it can hold changes a single verdict. Both mutations of this line are equivalent, and will stay so only while nothing reads from it — the moment an option is honoured, this baseline should be removed rather than re-explained."
+  },
+  {
+    "line": 120,
+    "mutation": "&& → ||",
+    "snippet": "const src = (answers && typeof answers === 'object') ? answers : {};",
+    "reason": "Equivalent, in accept. This line is only reached after validate has already passed, and a truthy non-object kept by the mutant is indexed by field id exactly as the empty object would be — both yield undefined for every question, which becomes an empty string or an empty list. But validate would have refused any form with a required question before reaching here, and a form with none produces the same empty record either way. That an unanswered optional question is stored as empty rather than missing is asserted in section 6."
+  }
+]

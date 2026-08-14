@@ -1,0 +1,42 @@
+name: gate
+on: [push, workflow_dispatch]
+jobs:
+  witness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - name: proof-of-play — a form that means what its asterisk says
+        run: node formrules.test.mjs
+
+      # Pinned. An unpinned gate is a gate somebody else can change.
+      - name: witness — try to break the tests
+        run: |
+          git clone --depth 1 --branch v0.2 https://github.com/sjgant80-hub/witness.git /tmp/witness
+          node /tmp/witness/witness.mjs mutate formrules.mjs \
+            --cap 400 --baseline witness.formrules.baseline.json --test "node formrules.test.mjs"
+
+      - name: the shipped page still matches the gated kernel
+        run: |
+          cp index.html /tmp/shipped.html
+          node build-page.mjs
+          diff -q /tmp/shipped.html index.html || {
+            echo "::error::index.html has drifted from formrules.mjs — run build-page.mjs and commit."; exit 1; }
+
+      # ⚑ The rule must be checked where the response is accepted, not only where it is typed.
+      - name: the submit path checks the rules
+        run: |
+          grep -q 'FR.accept' index.html || { echo '::error::submitForm is not checking the rules'; exit 1; }
+          node -e "
+            const html = require('fs').readFileSync('index.html','utf8');
+            for (const t of ['tel','number','date']) {
+              const re = new RegExp(\"fld.type === '\" + t + \"'[^\\n]*\");
+              const line = (html.match(re) || [''])[0];
+              if (!/fld\.required \? 'required'/.test(line)) {
+                console.error('::error::a required ' + t + ' is not marked required on the form'); process.exit(1);
+              }
+            }
+            console.log('ok · every field type carries the rule');
+          "
